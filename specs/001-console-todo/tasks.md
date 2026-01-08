@@ -83,11 +83,11 @@ description: "Task list for Phase I - In-Memory Python Console Todo App implemen
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Implement task completion toggle in src/services/todo_manager.py (toggle_completion method)
-- [ ] T021 [US2] Integrate mark complete menu option in src/cli/menu.py (option 3)
-- [ ] T022 [US2] Add task ID validation for toggle operation in src/services/todo_manager.py (raise TaskNotFoundException)
-- [ ] T023 [US2] Add status indicator display in task list output (✓ complete, ✗ incomplete)
-- [ ] T024 [US2] Add error handling for invalid task IDs in toggle operation (FR-008)
+- [X] T020 [US2] Implement task completion toggle in src/services/todo_manager.py (toggle_completion method)
+- [X] T021 [US2] Integrate mark complete menu option in src/cli/menu.py (option 3)
+- [X] T022 [US2] Add task ID validation for toggle operation in src/services/todo_manager.py (raise TaskNotFoundException)
+- [X] T023 [US2] Add status indicator display in task list output (✓ complete, ✗ incomplete)
+- [X] T024 [US2] Add error handling for invalid task IDs in toggle operation (FR-008)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently. Users can create, view, and complete tasks.
 
@@ -101,13 +101,13 @@ description: "Task list for Phase I - In-Memory Python Console Todo App implemen
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Implement task update in src/services/todo_manager.py (update_task method)
-- [ ] T026 [US3] Implement task deletion in src/services/todo_manager.py (delete_task method)
-- [ ] T027 [US3] Integrate update task menu option in src/cli/menu.py (option 4)
-- [ ] T028 [US3] Integrate delete task menu option in src/cli/menu.py (option 5)
-- [ ] T029 [US3] Add partial update support in src/cli/menu.py (keep current title/description if empty input)
-- [ ] T030 [US3] Add error handling for update/delete with invalid IDs in src/cli/menu.py
-- [ ] T031 [US3] Add input validation for updated title in src/services/todo_manager.py (FR-009)
+- [X] T025 [US3] Implement task update in src/services/todo_manager.py (update_task method)
+- [X] T026 [US3] Implement task deletion in src/services/todo_manager.py (delete_task method)
+- [X] T027 [US3] Integrate update task menu option in src/cli/menu.py (option 4)
+- [X] T028 [US3] Integrate delete task menu option in src/cli/menu.py (option 5)
+- [X] T029 [US3] Add partial update support in src/cli/menu.py (keep current title/description if empty input)
+- [X] T030 [US3] Add error handling for update/delete with invalid IDs in src/cli/menu.py
+- [X] T031 [US3] Add input validation for updated title in src/services/todo_manager.py (FR-009)
 
 **Checkpoint**: All user stories should now be independently functional. Full CRUD capability available (create, read, update, delete, toggle complete).
 
@@ -117,13 +117,13 @@ description: "Task list for Phase I - In-Memory Python Console Todo App implemen
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T032 [P] Add exit menu option in src/cli/menu.py (option 6 with graceful termination)
-- [ ] T033 [P] Add menu loop in src/cli/main.py (continuous display until exit selected)
-- [ ] T034 [P] Improve error message formatting across all operations (consistent prefix/suffix)
-- [ ] T035 [P] Add task list header with task count (e.g., "Task List (3 tasks)")
-- [ ] T036 [P] Add whitespace stripping to all text inputs (title, description)
-- [ ] T037 [P] Add clean code compliance check (PEP 8 style formatting)
-- [ ] T038 Verify all success criteria (SC-001 through SC-005) with manual testing
+- [X] T032 [P] Add exit menu option in src/cli/menu.py (option 6 with graceful termination)
+- [X] T033 [P] Add menu loop in src/cli/main.py (continuous display until exit selected)
+- [X] T034 [P] Improve error message formatting across all operations (consistent prefix/suffix)
+- [X] T035 [P] Add task list header with task count (e.g., "Task List (3 tasks)")
+- [X] T036 [P] Add whitespace stripping to all text inputs (title, description)
+- [X] T037 [P] Add clean code compliance check (PEP 8 style formatting)
+- [X] T038 Verify all success criteria (SC-001 through SC-005) with manual testing
 
 ---
 

@@ -6,7 +6,11 @@
       "Bash(bash:*)",
       "Bash(python -m cli.main:*)",
       "Bash(python:*)",
-      "Bash(git add .)"
+      "Bash(git add .)",
+      "Bash(git commit -m \"feat: Phase I - In-Memory Python Console Todo App\n\n- Implement basic CRUD operations for command-line todo application\n- Add Task: Create new todo items with title and description\n- Delete Task: Remove tasks from list by ID\n- Update Task: Modify existing task details (title, description)\n- View Task List: Display all tasks with status indicators\n- Mark as Complete: Toggle task completion status (complete/incomplete)\n\nFeatures:\n- In-memory storage (no database)\n- Command-line interface (CLI)\n- Interactive menu for user input\n- Task validation and error handling\n- Sequential task IDs\n- Status indicators (✓/✗)\n\nFiles:\n- src/models/task.py - Task dataclass\n- src/services/todo_manager.py - TaskList with CRUD operations\n- src/cli/menu.py - Interactive menu interface\n- src/cli/main.py - Application entry point\n- specs/001-console-todo/ - Specification, plan, tasks, research, data model\n- history/prompts/ - PHR records for each phase\n- pyproject.toml, .gitignore - Project configuration\n\nConstitution compliance:\n- Spec-Driven Development: All code generated from tasks via Claude Code\n- Clean Code Standards: PEP 8, docstrings, type hints\n- Phase-Based Evolution: Phase I (Console) complete\n- WSL 2 for Windows: Commands compatible\n\nSuccess criteria achieved:\n- Users can add first task and see in list within 30 seconds\n- Users can mark task as complete in under 5 seconds\n- All 5 CRUD operations executable with 3 or fewer interactions\n- Application handles invalid inputs gracefully without crashing\n- New users can complete full cycle within 2 minutes\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")",
+      "Bash(git remote add origin https://github.com/NaziaTabish/todo-app.git)",
+      "Bash(git push -u origin 001-console-todo)",
+      "Bash(timeout 10s python run_main.py)"
     ]
   }
 }
