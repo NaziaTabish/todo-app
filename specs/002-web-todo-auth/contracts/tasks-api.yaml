@@ -1,0 +1,386 @@
+openapi: 3.0.3
+info:
+  title: Todo App API
+  description: API for managing todo tasks with user authentication
+  version: 1.0.0
+servers:
+  - url: https://api.todoapp.com/v1
+    description: Production server
+  - url: https://staging-api.todoapp.com/v1
+    description: Staging server
+  - url: http://localhost:8000/v1
+    description: Development server
+
+paths:
+  /users/{user_id}/tasks:
+    get:
+      summary: List all tasks for a user
+      description: Retrieve all tasks belonging to the specified user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: UUID of the user
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          required: false
+          description: Filter tasks by completion status
+          schema:
+            type: string
+            enum: [all, pending, completed]
+            default: all
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of tasks to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: offset
+          in: query
+          required: false
+          description: Number of tasks to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+                  total:
+                    type: integer
+                  offset:
+                    type: integer
+                  limit:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - jwt_auth: []
+
+    post:
+      summary: Create a new task
+      description: Create a new task for the specified user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: UUID of the user
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+        - jwt_auth: []
+
+  /users/{user_id}/tasks/{task_id}:
+    get:
+      summary: Get task details
+      description: Retrieve details of a specific task
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: UUID of the user
+          schema:
+            type: string
+            format: uuid
+        - name: task_id
+          in: path
+          required: true
+          description: UUID of the task
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - jwt_auth: []
+
+    put:
+      summary: Update task
+      description: Update details of a specific task
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: UUID of the user
+          schema:
+            type: string
+            format: uuid
+        - name: task_id
+          in: path
+          required: true
+          description: UUID of the task
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - jwt_auth: []
+
+    delete:
+      summary: Delete task
+      description: Delete a specific task
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: UUID of the user
+          schema:
+            type: string
+            format: uuid
+        - name: task_id
+          in: path
+          required: true
+          description: UUID of the task
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Task deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - jwt_auth: []
+
+  /users/{user_id}/tasks/{task_id}/complete:
+    patch:
+      summary: Toggle task completion
+      description: Toggle the completion status of a specific task
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: UUID of the user
+          schema:
+            type: string
+            format: uuid
+        - name: task_id
+          in: path
+          required: true
+          description: UUID of the task
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task completion status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - jwt_auth: []
+
+components:
+  schemas:
+    Task:
+      type: object
+      required:
+        - id
+        - title
+        - completed
+        - created_at
+        - updated_at
+        - user_id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the task
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Task title
+        description:
+          type: string
+          maxLength: 10000
+          description: Optional task description
+        completed:
+          type: boolean
+          description: Whether the task is completed
+        created_at:
+          type: string
+          format: date-time
+          description: When the task was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the task was last updated
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the user who owns this task
+        due_date:
+          type: string
+          format: date-time
+          description: Optional due date for the task
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 3
+          default: 1
+          description: Task priority (1=highest, 3=lowest)
+
+    TaskCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 10000
+        due_date:
+          type: string
+          format: date-time
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 3
+          default: 1
+
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 10000
+        due_date:
+          type: string
+          format: date-time
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 3
+        completed:
+          type: boolean
+
+    Error:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
+
+  responses:
+    Unauthorized:
+      description: Authentication credentials are missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: User does not have permission to access this resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request data is invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    jwt_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication endpoints
