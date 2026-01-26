@@ -22,7 +22,30 @@
       "SlashCommand(/sp.tasks)",
       "Bash(.specify/scripts/bash/create-phr.sh --title \"Phase-II-Web-Todo-App-Auth\" --stage \"plan\" --feature \"web-todo-auth\" --json)",
       "Bash(.specify/scripts/bash/create-phr.sh --title \"Phase-II-Web-Todo-App-Auth\" --stage \"plan\" --feature \"002-web-todo-auth\" --json)",
-      "SlashCommand(/sp.implement)"
+      "SlashCommand(/sp.implement)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Complete Phase II - Full-Stack Web Todo App with Authentication\n\nImplementation of full-stack web application with multi-user authentication:\n- User Registration: Create accounts with email, username and password\n- User Login: Authenticate with email and password, JWT token management\n- Task Management: Full CRUD operations (Create, Read, Update, Delete, Toggle Complete)\n- Data Isolation: Each user''s tasks are securely isolated from others\n- Responsive UI: Modern web interface working on desktop and mobile\n\nTechnical Implementation:\n- Frontend: Next.js 16+ with TypeScript, Tailwind CSS, App Router\n- Backend: FastAPI with Python 3.13+, SQLModel ORM, PostgreSQL\n- Authentication: JWT-based with custom middleware and validation\n- Architecture: Clean separation of concerns with proper error handling\n- Security: User data isolation, input validation, secure token handling\n\nFiles:\n- backend/: FastAPI application with models, services, API endpoints\n- frontend/: Next.js application with components, pages, types, services\n- specs/002-web-todo-auth/: Complete specification, plan, tasks, contracts\n- README.md: Complete documentation\n\nFeatures implemented:\n- User registration and login with form validation\n- JWT token-based authentication and authorization\n- Full task CRUD operations with filtering and status indicators\n- Responsive UI with React components and Tailwind styling\n- Secure data isolation between users\n- Error handling and loading states\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git add PHASE_II_SUMMARY.md)",
+      "Bash(git commit -m \"docs: Add Phase II implementation summary\n\n- Document key accomplishments of Full-Stack Web Todo App\n- Detail completed features and project structure\n- Outline success criteria achievement\n- Plan next steps for deployment\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")",
+      "Bash(npm install)",
+      "Bash(npm run dev)",
+      "Bash(pip install -r requirements.txt)",
+      "Bash(pip install playwright)",
+      "Bash(playwright install chromium)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :3000)",
+      "Bash(taskkill /PID 2672 /F)",
+      "Bash(taskkill /pid 2672 /f)",
+      "Bash(powershell \"Stop-Process -Id 2672 -Force\")",
+      "Bash(findstr :3001)",
+      "Bash(tasklist)",
+      "Bash(findstr node)",
+      "Bash(powershell \"Stop-Process -Id 19276 -Force\")",
+      "Bash(curl http://localhost:8000/openapi.json)",
+      "Bash(curl -s http://localhost:8000/openapi.json)",
+      "Bash(findstr \"auth\")",
+      "Bash(curl -i -X POST http://localhost:8000/api/auth/register -H \"Content-Type: application/json\" -d \"{\"\"email\"\":\"\"test@example.com\"\",\"\"username\"\":\"\"testuser\"\",\"\"password\"\":\"\"password123\"\",\"\"first_name\"\":\"\"Test\"\",\"\"last_name\"\":\"\"User\"\"}\")",
+      "Bash(findstr \"/api/auth\")"
     ]
   }
 }

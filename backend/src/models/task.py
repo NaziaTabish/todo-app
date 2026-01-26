@@ -26,7 +26,7 @@ class Task(TaskBase, table=True):
 class TaskCreate(TaskBase):
     """Schema for creating a new task."""
     title: str = Field(min_length=1, max_length=200)
-    user_id: uuid.UUID
+    user_id: Optional[uuid.UUID] = None
 
 
 class TaskRead(TaskBase):

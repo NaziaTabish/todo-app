@@ -4,14 +4,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from datetime import timedelta
 from ..database.database import get_session
-from ..models.user import User, UserCreate, UserRead
+from ..models.user import User, UserCreate, UserRead, UserLogin
 from ..services.user_service import UserService
+from .deps import get_current_user, get_current_active_user
 from typing import Dict
 
 router = APIRouter()
 
 
-@router.post("/register", response_model=UserRead)
+@router.post("/register")
 def register(user_create: UserCreate, session: Session = Depends(get_session)):
     """Register a new user."""
     # Check if user with email already exists
@@ -34,13 +35,30 @@ def register(user_create: UserCreate, session: Session = Depends(get_session)):
 
     # Create the new user
     db_user = UserService.create_user(session, user_create)
-    return db_user
+    
+    # Create access token
+    access_token_expires = timedelta(minutes=UserService.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = UserService.create_access_token(
+        data={"sub": str(db_user.id)}, expires_delta=access_token_expires
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": db_user.id,
+            "email": db_user.email,
+            "username": db_user.username,
+            "first_name": db_user.first_name,
+            "last_name": db_user.last_name
+        }
+    }
 
 
 @router.post("/login")
-def login(email: str, password: str, session: Session = Depends(get_session)):
+def login(user_login: UserLogin, session: Session = Depends(get_session)):
     """Authenticate user and return access token."""
-    user = UserService.authenticate_user(session, email, password)
+    user = UserService.authenticate_user(session, user_login.email, user_login.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -76,6 +94,6 @@ def logout():
 
 
 @router.get("/me", response_model=UserRead)
-def get_current_user(current_user: UserRead = Depends(get_current_active_user)):
+def get_current_user_info(current_user: UserRead = Depends(get_current_active_user)):
     """Get current authenticated user's information."""
     return current_user

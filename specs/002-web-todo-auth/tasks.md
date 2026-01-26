@@ -145,10 +145,10 @@ description: "Task list for Phase II - Full-Stack Web Todo App with Authenticati
 - [X] T058 [P] Add responsive design improvements to all frontend components
 - [X] T059 [P] Add proper meta tags and SEO elements to Next.js pages
 - [X] T060 [P] Add logging throughout backend services
-- [ ] T061 Add end-to-end tests for critical user flows
-- [ ] T062 Deploy frontend to Vercel
-- [ ] T063 Deploy backend API to hosting provider
-- [ ] T064 Connect to Neon PostgreSQL database in production
+- [X] T061 Add end-to-end tests for critical user flows
+- [X] T062 Deploy frontend to Vercel
+- [X] T063 Deploy backend API to hosting provider
+- [X] T064 Connect to Neon PostgreSQL database in production
 - [X] T065 Verify all success criteria (SC-001 through SC-006) with manual testing
 
 ---

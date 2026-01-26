@@ -6,10 +6,17 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '../../components/Layout/Navbar';
 import TaskForm from '../../components/TaskForm';
-import AuthService from '../../services/auth';
+import { useUser } from '../../context/UserContext';
 
 const NewTaskPage: React.FC = () => {
   const router = useRouter();
+  const { user, isAuthenticated, loading } = useUser();
+
+  React.useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [loading, isAuthenticated, router]);
 
   const handleSave = () => {
     router.push('/dashboard');
@@ -19,38 +26,37 @@ const NewTaskPage: React.FC = () => {
     router.push('/dashboard');
   };
 
-  // Get user ID from auth service
-  const getUser = () => {
-    try {
-      // This is a simplified approach - in a real app you'd use a context or better auth management
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        router.push('/login');
-        return null;
-      }
-      // Decode token to get user ID (simplified)
-      // In a real app you'd have better token decoding
-      return 'current_user_id'; // This would come from the token or context
-    } catch (error) {
-      router.push('/login');
-      return null;
-    }
-  };
-
-  // For now, we'll use a placeholder user ID - in a real app this would come from context
-  const userId = typeof window !== 'undefined' ? localStorage.getItem('user_id') || 'placeholder_user_id' : 'placeholder_user_id';
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen pb-20">
       <Navbar />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 pt-24 md:pt-32">
         <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Create New Task</h1>
+          <div className="glass rounded-3xl p-8 md:p-10 shadow-lg animate-fade-in relative">
+
+            <div className="flex items-center gap-4 mb-8">
+              <button
+                onClick={handleCancel}
+                className="p-2 rounded-xl hover:bg-black/5 transition-colors"
+                aria-label="Go back"
+              >
+                <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+              </button>
+              <h1 className="text-3xl font-bold font-display text-gray-900">Create New Task</h1>
+            </div>
 
             <TaskForm
-              userId={userId}
+              userId={user.id}
               onSave={handleSave}
               onCancel={handleCancel}
             />

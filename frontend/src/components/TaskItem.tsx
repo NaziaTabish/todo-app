@@ -21,77 +21,90 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle, onDelete }) => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const priorityConfig = {
+    1: { label: 'High', color: 'bg-red-100 text-red-700' },
+    2: { label: 'Medium', color: 'bg-orange-100 text-orange-700' },
+    3: { label: 'Low', color: 'bg-green-100 text-green-700' },
+  };
+
   return (
-    <div className={`border rounded-lg p-4 shadow-sm ${
-      task.completed
-        ? 'bg-green-50 border-green-200'
-        : 'bg-white border-gray-200'
-    }`}>
-      <div className="flex items-start">
-        {/* Checkbox */}
-        <div className="flex items-center mr-3 mt-1">
-          <input
-            type="checkbox"
-            checked={task.completed}
-            onChange={onToggle}
-            className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-          />
+    <div className={`group relative p-5 rounded-xl border transition-all duration-200 ${task.completed
+        ? 'bg-gray-50 border-gray-200'
+        : 'bg-white border-gray-200 shadow-sm hover:shadow-md hover:border-primary-200'
+      }`}>
+      <div className="flex items-start gap-4">
+        {/* Custom Checkbox */}
+        <div className="pt-1">
+          <label className="relative flex items-center justify-center p-0.5 rounded-full cursor-pointer">
+            <input
+              type="checkbox"
+              checked={task.completed}
+              onChange={onToggle}
+              className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-md checked:bg-primary-600 checked:border-primary-600 transition-colors focus:ring-2 focus:ring-primary-200 focus:outline-none"
+            />
+            <svg
+              className="absolute w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity duration-200"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="3"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </label>
         </div>
 
-        {/* Task Content */}
-        <div className="flex-grow">
-          <div className="flex justify-between">
-            <h3 className={`text-lg font-medium ${
-              task.completed ? 'line-through text-gray-500' : 'text-gray-900'
-            }`}>
+        {/* Content */}
+        <div className="flex-grow min-w-0">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <h3 className={`text-lg font-semibold truncate pr-8 ${task.completed ? 'text-gray-500 line-through Decoration-gray-400' : 'text-gray-900'
+              }`}>
               {task.title}
             </h3>
 
-            {/* Priority Indicator */}
-            <div className={`ml-2 px-2 py-1 rounded text-xs font-medium ${
-              task.priority === 1
-                ? 'bg-red-100 text-red-800'
-                : task.priority === 2
-                  ? 'bg-yellow-100 text-yellow-800'
-                  : 'bg-green-100 text-green-800'
-            }`}>
-              {task.priority === 1 ? 'High' : task.priority === 2 ? 'Medium' : 'Low'}
-            </div>
+            <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${priorityConfig[task.priority as keyof typeof priorityConfig]?.color || 'bg-gray-100 text-gray-600'
+              }`}>
+              {priorityConfig[task.priority as keyof typeof priorityConfig]?.label}
+            </span>
           </div>
 
           {task.description && (
-            <p className={`mt-1 text-gray-600 ${
-              task.completed ? 'line-through' : ''
-            }`}>
+            <p className={`text-sm text-gray-600 mb-3 ${task.completed ? 'line-through opacity-70' : ''
+              }`}>
               {task.description}
             </p>
           )}
 
-          <div className="mt-2 flex flex-wrap gap-2 text-sm text-gray-500">
-            <span>Created: {formatDate(task.created_at)}</span>
-            {task.updated_at !== task.created_at && (
-              <span>Updated: {formatDate(task.updated_at)}</span>
-            )}
+          <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
+            <div className="flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>{formatDate(task.created_at)}</span>
+            </div>
+
             {task.due_date && (
-              <span className="text-orange-600 font-medium">
-                Due: {formatDate(task.due_date)}
-              </span>
+              <div className="flex items-center gap-1.5 text-orange-600 font-medium">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Due: {formatDate(task.due_date)}</span>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex space-x-2 ml-4">
-          <button
-            onClick={onDelete}
-            className="text-red-600 hover:text-red-800 focus:outline-none"
-            aria-label="Delete task"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-          </button>
-        </div>
+        {/* Delete Button */}
+        <button
+          onClick={onDelete}
+          className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+          aria-label="Delete task"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
       </div>
     </div>
   );

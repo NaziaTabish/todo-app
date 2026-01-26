@@ -9,6 +9,7 @@ from ..database.database import get_session
 from ..models.user import User
 from ..services.user_service import UserService
 import os
+import uuid
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -35,10 +36,11 @@ def get_current_user(
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
-        if user_id is None:
+        user_id_str: str = payload.get("sub")
+        if user_id_str is None:
             raise credentials_exception
-    except JWTError:
+        user_id = uuid.UUID(user_id_str)
+    except (JWTError, ValueError):
         raise credentials_exception
 
     user = session.get(User, user_id)

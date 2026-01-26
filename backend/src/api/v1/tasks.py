@@ -1,6 +1,6 @@
 """Task management API endpoints for Todo application."""
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status as fastapi_status, Query
 from sqlmodel import Session
 from typing import List
 from ...database.database import get_session
@@ -23,11 +23,15 @@ def get_tasks(
 ):
     """Get all tasks for a specific user with optional filtering."""
     # Ensure user can only access their own tasks
-    if current_user.id != user_id:
+    print(f"DEBUG AUTH: current_user.id={current_user.id} (type={type(current_user.id)})")
+    print(f"DEBUG AUTH: user_id={user_id} (type={type(user_id)})")
+    if str(current_user.id) != user_id:
+        print("DEBUG AUTH: MATCH FAILED")
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=fastapi_status.HTTP_403_FORBIDDEN,
             detail="Not authorized to access these tasks"
         )
+    print("DEBUG AUTH: MATCH SUCCESS")
 
     tasks = TaskService.get_tasks_by_user(session, user_id, status, limit, offset)
     return tasks
@@ -44,7 +48,7 @@ def create_task(
     # Ensure user can only create tasks for themselves
     if str(current_user.id) != user_id:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=fastapi_status.HTTP_403_FORBIDDEN,
             detail="Not authorized to create tasks for this user"
         )
 
@@ -66,14 +70,14 @@ def get_task(
     # Ensure user can only access their own tasks
     if str(current_user.id) != user_id:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=fastapi_status.HTTP_403_FORBIDDEN,
             detail="Not authorized to access these tasks"
         )
 
     task = TaskService.get_task_by_id(session, task_id, current_user.id)
     if not task:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=fastapi_status.HTTP_404_NOT_FOUND,
             detail="Task not found"
         )
 
@@ -92,14 +96,14 @@ def update_task(
     # Ensure user can only update their own tasks
     if str(current_user.id) != user_id:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=fastapi_status.HTTP_403_FORBIDDEN,
             detail="Not authorized to update these tasks"
         )
 
     updated_task = TaskService.update_task(session, task_id, current_user.id, task_update)
     if not updated_task:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=fastapi_status.HTTP_404_NOT_FOUND,
             detail="Task not found"
         )
 
@@ -117,14 +121,14 @@ def delete_task(
     # Ensure user can only delete their own tasks
     if str(current_user.id) != user_id:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=fastapi_status.HTTP_403_FORBIDDEN,
             detail="Not authorized to delete these tasks"
         )
 
     success = TaskService.delete_task(session, task_id, current_user.id)
     if not success:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=fastapi_status.HTTP_404_NOT_FOUND,
             detail="Task not found"
         )
 
@@ -142,14 +146,14 @@ def toggle_task_completion(
     # Ensure user can only update their own tasks
     if str(current_user.id) != user_id:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=fastapi_status.HTTP_403_FORBIDDEN,
             detail="Not authorized to update these tasks"
         )
 
     task = TaskService.toggle_task_completion(session, task_id, current_user.id)
     if not task:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=fastapi_status.HTTP_404_NOT_FOUND,
             detail="Task not found"
         )
 

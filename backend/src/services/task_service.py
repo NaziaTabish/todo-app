@@ -19,13 +19,18 @@ class TaskService:
     @staticmethod
     def create_task(session: Session, task_create: TaskCreate) -> Task:
         """Create a new task."""
-        logger.info(f"Creating new task for user ID: {task_create.user_id}")
+        # Ensure user_id is UUID
+        user_id = task_create.user_id
+        if not isinstance(user_id, UUID):
+            user_id = UUID(str(user_id))
+
+        logger.info(f"Creating new task for user ID: {user_id}")
 
         db_task = Task(
             title=task_create.title,
             description=task_create.description,
             completed=task_create.completed,
-            user_id=task_create.user_id,
+            user_id=user_id,
             due_date=task_create.due_date,
             priority=task_create.priority if task_create.priority is not None else 1
         )
@@ -37,21 +42,30 @@ class TaskService:
         return db_task
 
     @staticmethod
-    def get_task_by_id(session: Session, task_id: UUID, user_id: UUID) -> Optional[Task]:
+    def get_task_by_id(session: Session, task_id: str, user_id: str) -> Optional[Task]:
         """Get a task by ID for a specific user."""
-        statement = select(Task).where(Task.id == task_id, Task.user_id == user_id)
-        return session.exec(statement).first()
+        try:
+            t_id = UUID(str(task_id)) if not isinstance(task_id, UUID) else task_id
+            u_id = UUID(str(user_id)) if not isinstance(user_id, UUID) else user_id
+            statement = select(Task).where(Task.id == t_id, Task.user_id == u_id)
+            return session.exec(statement).first()
+        except (ValueError, AttributeError):
+            return None
 
     @staticmethod
     def get_tasks_by_user(
         session: Session,
-        user_id: UUID,
+        user_id: str, # Changed type hint to reflect reality and internal conversion
         status: Optional[str] = None,
         limit: int = 50,
         offset: int = 0
     ) -> List[Task]:
         """Get all tasks for a specific user with optional filtering."""
-        statement = select(Task).where(Task.user_id == user_id)
+        try:
+            target_user_id = UUID(str(user_id)) if not isinstance(user_id, UUID) else user_id
+            statement = select(Task).where(Task.user_id == target_user_id)
+        except (ValueError, AttributeError):
+            return []
 
         # Apply status filter if provided
         if status == "pending":
@@ -65,7 +79,7 @@ class TaskService:
         return session.exec(statement).all()
 
     @staticmethod
-    def update_task(session: Session, task_id: UUID, user_id: UUID, task_update: TaskUpdate) -> Optional[Task]:
+    def update_task(session: Session, task_id: str, user_id: str, task_update: TaskUpdate) -> Optional[Task]:
         """Update a task for a specific user."""
         db_task = TaskService.get_task_by_id(session, task_id, user_id)
         if not db_task:
@@ -92,7 +106,7 @@ class TaskService:
         return db_task
 
     @staticmethod
-    def delete_task(session: Session, task_id: UUID, user_id: UUID) -> bool:
+    def delete_task(session: Session, task_id: str, user_id: str) -> bool:
         """Delete a task for a specific user."""
         db_task = TaskService.get_task_by_id(session, task_id, user_id)
         if not db_task:
@@ -103,7 +117,7 @@ class TaskService:
         return True
 
     @staticmethod
-    def toggle_task_completion(session: Session, task_id: UUID, user_id: UUID) -> Optional[Task]:
+    def toggle_task_completion(session: Session, task_id: str, user_id: str) -> Optional[Task]:
         """Toggle the completion status of a task."""
         db_task = TaskService.get_task_by_id(session, task_id, user_id)
         if not db_task:

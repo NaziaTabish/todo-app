@@ -8,21 +8,28 @@ class AuthService {
    * Store the authentication token
    */
   setToken(token: string): void {
-    localStorage.setItem('access_token', token);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('access_token', token);
+    }
   }
 
   /**
    * Get the stored authentication token
    */
   getToken(): string | null {
-    return localStorage.getItem('access_token');
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('access_token');
+    }
+    return null;
   }
 
   /**
    * Remove the authentication token
    */
   removeToken(): void {
-    localStorage.removeItem('access_token');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('access_token');
+    }
   }
 
   /**

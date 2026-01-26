@@ -54,7 +54,6 @@ const TaskForm: React.FC<TaskFormProps> = ({ userId, task, onSave, onCancel }) =
       [name]: name === 'priority' ? parseInt(value) : value
     }));
 
-    // Clear error when user starts typing
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -75,7 +74,6 @@ const TaskForm: React.FC<TaskFormProps> = ({ userId, task, onSave, onCancel }) =
 
     try {
       if (task) {
-        // Update existing task
         await tasksApi.updateTask(userId, task.id, {
           title: formData.title,
           description: formData.description,
@@ -83,13 +81,12 @@ const TaskForm: React.FC<TaskFormProps> = ({ userId, task, onSave, onCancel }) =
           priority: formData.priority
         });
       } else {
-        // Create new task
         await tasksApi.createTask(userId, {
           title: formData.title,
           description: formData.description,
           due_date: formData.due_date || undefined,
           priority: formData.priority,
-          completed: false // Default to not completed
+          completed: false
         });
       }
 
@@ -98,7 +95,12 @@ const TaskForm: React.FC<TaskFormProps> = ({ userId, task, onSave, onCancel }) =
       console.error('Error saving task:', err);
       let errorMessage = 'Failed to save task';
       if (err.response?.data?.detail) {
-        errorMessage = err.response.data.detail;
+        const detail = err.response.data.detail;
+        if (Array.isArray(detail)) {
+          errorMessage = detail.map((e: any) => e.msg).join(', ');
+        } else {
+          errorMessage = detail;
+        }
       } else if (err.message) {
         errorMessage = err.message;
       }
@@ -109,104 +111,107 @@ const TaskForm: React.FC<TaskFormProps> = ({ userId, task, onSave, onCancel }) =
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">
-        {task ? 'Edit Task' : 'Create New Task'}
-      </h2>
-
+    <form onSubmit={handleSubmit} className="space-y-6">
       {errors.submit && (
-        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
           {errors.submit}
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-            Title *
+      <div>
+        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1.5">
+          Title <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          className={`w-full px-4 py-3 rounded-xl bg-white/50 border focus:ring-2 focus:ring-primary-200 outline-none transition-all placeholder-gray-400 ${errors.title ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-primary-500'
+            }`}
+          placeholder="e.g., Buy groceries"
+        />
+        {errors.title && (
+          <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1.5">
+          Description
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          rows={4}
+          className="w-full px-4 py-3 rounded-xl bg-white/50 border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all placeholder-gray-400 resize-none"
+          placeholder="Add details about your task..."
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="due_date" className="block text-sm font-medium text-gray-700 mb-1.5">
+            Due Date
           </label>
           <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
+            type="datetime-local"
+            id="due_date"
+            name="due_date"
+            value={formData.due_date}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-              errors.title ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Enter task title"
+            className="w-full px-4 py-3 rounded-xl bg-white/50 border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all placeholder-gray-400"
           />
-          {errors.title && (
-            <p className="mt-1 text-sm text-red-600">{errors.title}</p>
-          )}
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-            Description
+        <div>
+          <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1.5">
+            Priority
           </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Enter task description (optional)"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label htmlFor="due_date" className="block text-sm font-medium text-gray-700 mb-1">
-              Due Date
-            </label>
-            <input
-              type="datetime-local"
-              id="due_date"
-              name="due_date"
-              value={formData.due_date}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1">
-              Priority
-            </label>
+          <div className="relative">
             <select
               id="priority"
               name="priority"
               value={formData.priority}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="w-full px-4 py-3 rounded-xl bg-white/50 border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all appearance-none"
             >
-              <option value={1}>High</option>
-              <option value={2}>Medium</option>
-              <option value={3}>Low</option>
+              <option value={1}>High Priority</option>
+              <option value={2}>Medium Priority</option>
+              <option value={3}>Low Priority</option>
             </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className="flex space-x-3">
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50"
-          >
-            {loading ? 'Saving...' : task ? 'Update Task' : 'Create Task'}
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-md transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
+      <div className="flex gap-4 pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex-1 py-3.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="flex-1 py-3.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow-lg shadow-primary-600/30 transition-all hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0 disabled:shadow-none"
+        >
+          {loading ? 'Saving...' : 'Create Task'}
+        </button>
+      </div>
+    </form>
   );
 };
 

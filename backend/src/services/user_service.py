@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 # JWT settings
 SECRET_KEY = os.getenv("SECRET_KEY", "your-default-secret-key-change-in-production")
@@ -28,6 +28,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "15")
 
 class UserService:
     """Service class for user-related operations."""
+    
+    # Constants
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -84,11 +87,17 @@ class UserService:
         logger.info(f"Successfully created user with ID: {db_user.id}")
         return db_user
 
+
+
     @staticmethod
     def get_user_by_id(session: Session, user_id: str) -> Optional[User]:
         """Get a user by ID."""
-        statement = select(User).where(User.id == user_id)
-        return session.exec(statement).first()
+        try:
+            uuid_id = uuid.UUID(user_id)
+            statement = select(User).where(User.id == uuid_id)
+            return session.exec(statement).first()
+        except ValueError:
+            return None
 
     @staticmethod
     def get_user_by_email(session: Session, email: str) -> Optional[User]:

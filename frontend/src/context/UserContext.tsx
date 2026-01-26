@@ -27,12 +27,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const checkInitialAuthStatus = async () => {
-    if (AuthService.isAuthenticated()) {
+    // Only check auth status on the client side
+    if (typeof window !== 'undefined' && AuthService.isAuthenticated()) {
       try {
         const userData = await AuthService.getCurrentUser();
         setUser(userData);
       } catch (error) {
-        console.error('Failed to get current user:', error);
+        console.warn('Failed to restore session:', error);
         // If token is invalid, log out the user
         AuthService.logout();
       }
@@ -50,7 +51,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(userData);
       return true;
     } catch (error) {
-      console.error('Failed to verify auth status:', error);
+      // Token is invalid or expired - this is expected behavior when session ends
+      console.warn('Session expired or invalid, logging out...');
       logout();
       return false;
     }
