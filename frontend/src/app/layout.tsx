@@ -1,7 +1,7 @@
 /** Root layout for Todo application */
 
 import { UserProvider } from '../context/UserContext';
-import '../styles/globals.css';
+import '../../styles/globals.css';
 
 export default function RootLayout({
   children,
