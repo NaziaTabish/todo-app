@@ -7,7 +7,11 @@ passlib[bcrypt]==1.7.4
 python-jose[cryptography]==3.3.0
 python-multipart==0.0.20
 alembic==1.14.0
-psycopg==3.2.3
+psycopg[binary]==3.2.3
 python-dotenv==1.0.1
 pytest==8.3.4
 httpx==0.27.2
+
+# Phase III: AI Chatbot dependencies
+openai>=1.0.0
+mcp>=1.0.0

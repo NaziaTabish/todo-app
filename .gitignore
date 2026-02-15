@@ -25,7 +25,11 @@ wheels/
 venv/
 ENV/
 env/
-
+env.local
+env.*.local
+.env
+.env.local
+.env.*.local
 # IDE
 .vscode/
 .idea/

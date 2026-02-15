@@ -212,6 +212,8 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 ## Active Technologies
 - Python 3.13+ + None (standard library only for Phase I in-memory implementation) (001-console-todo)
 - In-memory (Python data structures: list/dict, no persistence) (001-console-todo)
+- Python 3.13+ (backend), TypeScript/Next.js 16+ (frontend) (003-ai-chatbot)
+- Neon PostgreSQL (existing from Phase II) + session-based chat state (003-ai-chatbot)
 
 ## Recent Changes
 - 001-console-todo: Added Python 3.13+ + None (standard library only for Phase I in-memory implementation)

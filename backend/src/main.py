@@ -9,6 +9,7 @@ from .database.database import engine
 from .api.auth import router as auth_router
 from .api.v1.users import router as users_router
 from .api.v1.tasks import router as tasks_router
+from .api.v1.chat import router as chat_router
 from .models.user import User
 from .models.task import Task
 import logging
@@ -52,6 +53,7 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(users_router, prefix="/api/users", tags=["users"])
 app.include_router(tasks_router, prefix="/api/users", tags=["tasks"])
+app.include_router(chat_router, prefix="/api/v1", tags=["chat"])
 
 @app.get("/")
 def read_root():

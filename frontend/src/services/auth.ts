@@ -14,6 +14,15 @@ class AuthService {
   }
 
   /**
+   * Store user data in localStorage
+   */
+  setUserData(user: any): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user_data', JSON.stringify(user));
+    }
+  }
+
+  /**
    * Get the stored authentication token
    */
   getToken(): string | null {
@@ -47,12 +56,27 @@ class AuthService {
       const response = await authApi.register(userData);
       const { access_token, user } = response.data;
 
-      // Store the token
+      // Store the token and user data
       this.setToken(access_token);
+      this.setUserData(user);
 
       return { access_token, token_type: 'bearer', user };
     } catch (error: any) {
-      throw new Error(error.response?.data?.detail || 'Registration failed');
+      const detail = error.response?.data?.detail;
+      let message = 'Registration failed';
+
+      if (typeof detail === 'string') {
+        message = detail;
+      } else if (Array.isArray(detail)) {
+        // Handle standard FastAPI validation errors
+        message = detail.map((err: any) => err.msg || JSON.stringify(err)).join(', ');
+      } else if (typeof detail === 'object' && detail !== null) {
+        message = JSON.stringify(detail);
+      } else if (error.message) {
+        message = error.message;
+      }
+
+      throw new Error(message);
     }
   }
 
@@ -64,12 +88,27 @@ class AuthService {
       const response = await authApi.login(credentials);
       const { access_token, user } = response.data;
 
-      // Store the token
+      // Store the token and user data
       this.setToken(access_token);
+      this.setUserData(user);
 
       return { access_token, token_type: 'bearer', user };
     } catch (error: any) {
-      throw new Error(error.response?.data?.detail || 'Login failed');
+      const detail = error.response?.data?.detail;
+      let message = 'Login failed';
+
+      if (typeof detail === 'string') {
+        message = detail;
+      } else if (Array.isArray(detail)) {
+        // Handle standard FastAPI validation errors
+        message = detail.map((err: any) => err.msg || JSON.stringify(err)).join(', ');
+      } else if (typeof detail === 'object' && detail !== null) {
+        message = JSON.stringify(detail);
+      } else if (error.message) {
+        message = error.message;
+      }
+
+      throw new Error(message);
     }
   }
 
@@ -84,6 +123,9 @@ class AuthService {
       console.error('Logout API call failed:', error);
     } finally {
       this.removeToken();
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user_data');
+      }
     }
   }
 
@@ -93,6 +135,7 @@ class AuthService {
   async getCurrentUser(): Promise<User> {
     try {
       const response = await authApi.getCurrentUser();
+      this.setUserData(response.data);
       return response.data;
     } catch (error) {
       throw new Error('Failed to get user information');

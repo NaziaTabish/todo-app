@@ -3,6 +3,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useChat } from '../context/ChatContext';
 import TaskItem from './TaskItem';
 import { Task } from '../types/Task';
 import { tasksApi } from '../services/api';
@@ -16,10 +17,11 @@ const TaskList: React.FC<TaskListProps> = ({ userId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
+  const { lastTaskUpdate } = useChat();
 
   useEffect(() => {
     fetchTasks();
-  }, [userId, filter]);
+  }, [userId, filter, lastTaskUpdate]);
 
   const fetchTasks = async () => {
     try {
@@ -68,8 +70,8 @@ const TaskList: React.FC<TaskListProps> = ({ userId }) => {
     <button
       onClick={onClick}
       className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${active
-          ? 'bg-primary-600 text-white shadow-md shadow-primary-600/20'
-          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+        ? 'bg-primary-600 text-white shadow-md shadow-primary-600/20'
+        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
         }`}
     >
       {label}
